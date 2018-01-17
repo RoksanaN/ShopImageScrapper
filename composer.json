@@ -3,5 +3,7 @@
     "type": "project",
     "license": "MIT",
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "symfony/dom-crawler": "^4.0"
+    }
 }
