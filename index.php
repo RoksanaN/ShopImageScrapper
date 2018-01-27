@@ -2,7 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
-$article = $_GET['article'] ?? '';
+$requestArticle = $_GET['article'] ?? '';
 $customeUrl = $_GET['customeUrl'] ?? '';
 
 $success = false;
@@ -15,15 +15,19 @@ $categories = [
 //    'glasses/',
 ];
 
-if ($article) {
+if ($requestArticle) {
     require_once 'scrap.php';
+
+    $articles = array_filter(explode(' ', $requestArticle));
 
     try {
         foreach ($categories as $category) {
-            try {
-                scrap($host . $category . $article . '.html');
-            } catch (\Exception $e) {
-                // NOP
+            foreach ($articles as $article) {
+                try {
+                    scrap($host . $category . $article . '.html');
+                } catch (\Exception $e) {
+                    // NOP
+                }
             }
         }
 
