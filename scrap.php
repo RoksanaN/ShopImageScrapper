@@ -2,6 +2,18 @@
 
 use Symfony\Component\DomCrawler\Crawler;
 
+function parseImageUrlList(Crawler $crawler): array {
+    $images = $crawler->filter('.slider-inner li a img');
+
+    return $images->each(function (Crawler $image) {
+        return $image->attr('src');
+    });
+}
+
+function parseArticle(Crawler $crawler): string {
+    return $crawler->filter('.articul')->attr('data-value');
+}
+
 function scrap(string $articleUrl) {
     $html = file_get_contents($articleUrl);
 
@@ -9,23 +21,8 @@ function scrap(string $articleUrl) {
 
     $articleUrl = "{$articleUrlParsed['scheme']}://{$articleUrlParsed['host']}";
 
-    function parseImageUrlList(string $html): array {
-        $crawler = new Crawler($html);
-
-        $images = $crawler->filter('.slider-inner li a img');
-
-        return $images->each(function (Crawler $image) {
-            return $image->attr('src');
-        });
-    }
-
-    function parseArticle(string $html): string {
-        $crawler = new Crawler($html);
-
-        return $crawler->filter('.articul')->attr('data-value');
-    }
-
-    $imageUrlList = parseImageUrlList($html);
+    $crawler = new Crawler($html);
+    $imageUrlList = parseImageUrlList($crawler);
 
     if (empty($imageUrlList)) {
         throw new \Exception('Need update parse function');
@@ -33,7 +30,7 @@ function scrap(string $articleUrl) {
 
     file_exists('result') || mkdir('result', 0777);
 
-    $article = parseArticle($html);
+    $article = parseArticle($crawler);
 
     $targetDirectory = "result/$article";
     file_exists($targetDirectory) || mkdir($targetDirectory, 0777);

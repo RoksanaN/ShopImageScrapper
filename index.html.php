@@ -21,19 +21,6 @@
                 <form id="newForm">
 
                     <div class="input-group">
-                        <span class="input-group-addon" id="siteUrl1">http://trade-city.ua/catalog/</span>
-
-                        <div class="input-group-btn">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span id="siteUrl2"></span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" id="siteList">
-                                <li><a href="#"></a></li>
-                                <li><a href="#"></a></li>
-                            </ul>
-                        </div>
-
                         <input
                             class="form-control"
                             id="customeUrl"
@@ -42,9 +29,8 @@
                             value="<?php echo $customeUrl; ?>"
                         >
 
-                        <input type="hidden" id="realUrl" name="url">
+                        <input type="hidden" id="realUrl" name="article">
 
-                        <span class="input-group-addon" id="siteUrl3">.html</span>
                         <span class="input-group-btn">
                             <button class="btn btn-default">Go!</button>
                         </span>
@@ -104,9 +90,6 @@
                 el: {
                     siteList: $('#siteList'),
                     siteListA: $('#siteList a'),
-                    siteUrl3: $('#siteUrl3'),
-                    siteUrl2: $('#siteUrl2'),
-                    siteUrl1: $('#siteUrl1'),
                     customeUrl: $('#customeUrl'),
                     form: $('#newForm'),
                     newBlock: $('#newBlock'),
@@ -141,16 +124,9 @@
 
                         site.el.form.submit(() => {
 
-                            let siteUrl1 = site.el.siteUrl1.text(),
-                                siteUrl2 = site.el.siteUrl2.text(),
-                                siteUrl3 = site.el.siteUrl3.text(),
-                                customeUrl = site.el.customeUrl.val();
+                            let customeUrl = site.el.customeUrl.val();
 
-                            let realUrl = `${siteUrl1}${siteUrl2}${customeUrl}${siteUrl3}`;
-
-                            console.log('realUrl::', realUrl);
-
-                            site.el.realUrl.val(realUrl);
+                            site.el.realUrl.val(customeUrl);
 
                             // return false;
                         });
@@ -227,8 +203,6 @@
                     let newUrl = [].concat(site.data.urls);
                     newUrl.splice(indexUrl, 1);
 
-                    site.el.siteUrl2.html(site.data.curUrl);
-
                     site.set
                         .urlPath()
                         .a(newUrl)
@@ -239,8 +213,6 @@
                         
                         let $this = $(this),
                             newCurUrl = $this.text();
-                        
-                        site.el.siteUrl2.html(newCurUrl);
 
                         setTimeout(() => {
                             site.set._a($this, site.data.curUrl);
