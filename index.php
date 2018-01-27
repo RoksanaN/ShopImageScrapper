@@ -3,6 +3,7 @@
 require_once 'vendor/autoload.php';
 
 $url = $_GET['url'] ?? '';
+$customeUrl = $_GET['customeUrl'] ?? '';
 
 $success = false;
 
@@ -11,10 +12,15 @@ if ($url) {
 
     try {
         scrap($url);
-        $success = true;
+        $redirect = str_replace('index.php', '', $_SERVER['PHP_SELF']);
+        header('Location: ' . $redirect . '?customeUrl=' . $customeUrl);
+        exit();
     } catch (\Exception $e) {
         // NOP
     }
+}
+if ($customeUrl) {
+	$success = true;
 }
 
 require_once 'index.html.php';
