@@ -6,6 +6,7 @@
     "require": {
         "symfony/dom-crawler": "^4.0",
         "symfony/css-selector": "^4.0",
-        "maennchen/zipstream-php": "dev-master"
+        "maennchen/zipstream-php": "dev-master",
+        "symfony/filesystem": "^4.1@dev"
     }
 }

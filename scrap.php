@@ -29,7 +29,7 @@ function scrap(string $articleUrl, string $prefix) {
     }
 
     $article = parseArticle($crawler);
-    $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix . DIRECTORY_SEPARATOR . $article;
+    $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix;
     file_exists($targetDirectory) || mkdir($targetDirectory, 0777, true);
 
     $count = 1;

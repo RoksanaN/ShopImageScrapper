@@ -10,6 +10,21 @@ if (isset($_GET['zip']) && is_numeric($_GET['zip'])) {
     die;
 }
 
+if (isset($_GET['delete_all_zip'])) {
+    $handle = opendir('result');
+    $fs = new \Symfony\Component\Filesystem\Filesystem();
+
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry !== "." && $entry !== ".." && $entry !== 'index.php') {
+            $fs->remove('result' . DIRECTORY_SEPARATOR . $entry);
+        }
+    }
+
+    header('Location: /');
+
+    die;
+}
+
 $requestArticle = $_GET['article'] ?? '';
 $customeUrl = $_GET['customeUrl'] ?? '';
 
@@ -40,6 +55,7 @@ if ($requestArticle) {
         // NOP
     }
 }
+
 if ($customeUrl) {
 	$success = true;
 }

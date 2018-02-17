@@ -1,11 +1,22 @@
 <?php
 
 function streamZip($chunkDirectoryName) {
-    $filename = __DIR__ . DIRECTORY_SEPARATOR . 'result' . DIRECTORY_SEPARATOR . 'MI5149' . DIRECTORY_SEPARATOR . 'MI5149_1.jpg';
+    $dir = 'result' . DIRECTORY_SEPARATOR . $chunkDirectoryName;
 
-    $zip = new \ZipStream\ZipStream('example.zip');
+    if (!is_dir($dir)) {
+        echo '404';
+        die;
+    }
 
-    $zip->addFileFromPath('MI5149_1.jpg', $filename);
+    $handler = opendir($dir);
+    $zip = new \ZipStream\ZipStream("$chunkDirectoryName.zip");
+
+    while (false !== ($file = readdir($handler))) {
+        if ($file != "." && $file != "..") {
+            $fileName = $dir . DIRECTORY_SEPARATOR . $file;
+            $zip->addFileFromPath($file, $fileName);
+        }
+    }
 
     $zip->finish();
 }
