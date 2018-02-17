@@ -4,9 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9f08b412e086bf4da64b97ee4ffbf185",
-    "content-hash": "11dcc8c2990a4854b5b0ace6a5fa0264",
+    "content-hash": "31fe048c0396cb0ad0361f57f47323b9",
     "packages": [
+        {
+            "name": "maennchen/zipstream-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maennchen/ZipStream-PHP.git",
+                "reference": "95922b6324955974675fd4923f987faa598408af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/95922b6324955974675fd4923f987faa598408af",
+                "reference": "95922b6324955974675fd4923f987faa598408af",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">= 7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ZipStream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Duncan",
+                    "email": "pabs@pablotron.org"
+                },
+                {
+                    "name": "Jesse Donat",
+                    "email": "donatj@gmail.com"
+                },
+                {
+                    "name": "Jonatan Männchen",
+                    "email": "jonatan@maennchen.ch"
+                }
+            ],
+            "description": "ZipStream is a library for dynamically streaming dynamic zip files from PHP without writing to the disk at all on the server.",
+            "keywords": [
+                "stream",
+                "zip"
+            ],
+            "time": "2018-02-09T09:26:57+00:00"
+        },
         {
             "name": "symfony/css-selector",
             "version": "dev-master",
@@ -58,7 +109,7 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2018-01-03 07:38:11"
+            "time": "2018-01-03T07:38:11+00:00"
         },
         {
             "name": "symfony/dom-crawler",
@@ -114,7 +165,7 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2018-01-03 07:38:11"
+            "time": "2018-01-03T07:38:11+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -173,13 +224,15 @@
                 "portable",
                 "shim"
             ],
-            "time": "2017-12-17 16:08:10"
+            "time": "2017-12-17T16:08:10+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "maennchen/zipstream-php": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
