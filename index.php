@@ -2,32 +2,49 @@
 
 require_once 'vendor/autoload.php';
 
+if (isset($_GET['zip']) && is_numeric($_GET['zip'])) {
+    require_once 'zip.php';
+
+    streamZip($_GET['zip']);
+
+    die;
+}
+
+if (isset($_GET['delete_all_zip'])) {
+    $handle = opendir('result');
+    $fs = new \Symfony\Component\Filesystem\Filesystem();
+
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry !== "." && $entry !== ".." && $entry !== 'index.php') {
+            $fs->remove('result' . DIRECTORY_SEPARATOR . $entry);
+        }
+    }
+
+    header('Location: /');
+
+    die;
+}
+
 $requestArticle = $_GET['article'] ?? '';
 $customeUrl = $_GET['customeUrl'] ?? '';
 
 $success = false;
 
 $host = 'http://trade-city.ua/catalog/';
-$categories = [
-    // use only one variant because server return the same result for any category
-    'bag/',
-//    'belts/',
-//    'glasses/',
-];
+$category = 'bag/';
 
 if ($requestArticle) {
     require_once 'scrap.php';
 
     $articles = array_filter(explode(' ', $requestArticle));
 
+    $prefix = time();
     try {
-        foreach ($categories as $category) {
-            foreach ($articles as $article) {
-                try {
-                    scrap($host . $category . $article . '.html');
-                } catch (\Exception $e) {
-                    // NOP
-                }
+        foreach ($articles as $article) {
+            try {
+                scrap($host . $category . $article . '.html', $prefix);
+            } catch (\Exception $e) {
+                // NOP
             }
         }
 
@@ -38,6 +55,7 @@ if ($requestArticle) {
         // NOP
     }
 }
+
 if ($customeUrl) {
 	$success = true;
 }

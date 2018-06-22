@@ -7,52 +7,44 @@
 <body>
     <h1>LIST</h1>
 <?php } ?>
-        <?php
+    <?php
         $base = isset($_GET['res'])? './result': '.';
         $handle = opendir($base);
         if ($handle) {
-
             while (false !== ($entry = readdir($handle))) {
-
-                if ($entry != "." && $entry != ".." && $entry != "index.php") {
-
+                if ($entry != "." && $entry != ".." && $entry !== 'index.php') {
                     if (is_dir("$base/$entry")) {
+                        if ($handleInnerDirectory = opendir("$base/$entry")) {
+                            echo <<<HTML
+                                <h2 class="blockName">$entry</h2>
+                                <a href="?zip=$entry">$entry</a>
+                                <ul class="blockUL">
+HTML;
 
-                        if ($handle1 = opendir("$base/$entry")) {
-
-                            echo "<h2 class='blockName'>$entry</h2>
-                            <ul class='blockUL'>";
-                            
-                            while (false !== ($entry1 = readdir($handle1))) {
-
+                            while (false !== ($entry1 = readdir($handleInnerDirectory))) {
                                 if ($entry1 != "." && $entry1 != "..") {
-
                                     if (!is_dir($entry1)) {
                                         echo "<li><a href='$base/$entry/$entry1'>$entry1</a></li>\n";
                                     }
                                 }
                             }
 
-                            closedir($handle1);
+                            closedir($handleInnerDirectory);
 
                             echo "</ul>";
-
                         }
-                        
                     }
                 }
             }
 
             closedir($handle);
         }
-
-        ?>
-    </ul>
+    ?>
+    <a href="?delete_all_zip">DELETE ALL</a>
 <?php if (!isset($_GET['res'])) { ?>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/tmpl" id="tmplDownload">
         <a href="{{link}}" download="{{name}}">&#x1f4be;</a>
-    </script>
     </script>
     <script>
         $(function() {

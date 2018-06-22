@@ -14,7 +14,7 @@ function parseArticle(Crawler $crawler): string {
     return $crawler->filter('.articul')->attr('data-value');
 }
 
-function scrap(string $articleUrl) {
+function scrap(string $articleUrl, string $prefix) {
     $html = file_get_contents($articleUrl);
 
     $articleUrlParsed = parse_url($articleUrl);
@@ -28,12 +28,9 @@ function scrap(string $articleUrl) {
         throw new \Exception('Need update parse function');
     }
 
-    file_exists('result') || mkdir('result', 0777);
-
     $article = parseArticle($crawler);
-
-    $targetDirectory = "result/$article";
-    file_exists($targetDirectory) || mkdir($targetDirectory, 0777);
+    $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix;
+    file_exists($targetDirectory) || mkdir($targetDirectory, 0777, true);
 
     $count = 1;
 
@@ -46,6 +43,6 @@ function scrap(string $articleUrl) {
 
         $imageContent = file_get_contents($articleUrl . $imageUrl);
 
-        file_put_contents('./result/' . $article . '/' . $imageName, $imageContent);
+        file_put_contents('.' . DIRECTORY_SEPARATOR . $targetDirectory . DIRECTORY_SEPARATOR . $imageName, $imageContent);
     }
 }
