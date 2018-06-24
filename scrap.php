@@ -2,47 +2,54 @@
 
 use Symfony\Component\DomCrawler\Crawler;
 
-function parseImageUrlList(Crawler $crawler): array {
-    $images = $crawler->filter('.slider-inner li a img');
+class Scrapper
+{
+    public function scrap(string $articleUrl, string $prefix)
+    {
+        $html = file_get_contents($articleUrl);
 
-    return $images->each(function (Crawler $image) {
-        return $image->attr('src');
-    });
-}
+        $articleUrlParsed = parse_url($articleUrl);
 
-function parseArticle(Crawler $crawler): string {
-    return $crawler->filter('.articul')->attr('data-value');
-}
+        $articleUrl = "{$articleUrlParsed['scheme']}://{$articleUrlParsed['host']}";
 
-function scrap(string $articleUrl, string $prefix) {
-    $html = file_get_contents($articleUrl);
+        $crawler = new Crawler($html);
+        $imageUrlList = $this->parseImageUrlList($crawler);
 
-    $articleUrlParsed = parse_url($articleUrl);
+        if (empty($imageUrlList)) {
+            throw new \Exception('Need update parse function');
+        }
 
-    $articleUrl = "{$articleUrlParsed['scheme']}://{$articleUrlParsed['host']}";
+        $article = $this->parseArticle($crawler);
+        $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix;
+        file_exists($targetDirectory) || mkdir($targetDirectory, 0777, true);
 
-    $crawler = new Crawler($html);
-    $imageUrlList = parseImageUrlList($crawler);
+        $count = 1;
 
-    if (empty($imageUrlList)) {
-        throw new \Exception('Need update parse function');
+        foreach ($imageUrlList as $imageUrl) {
+            $imageBaseName = basename($imageUrl);
+
+            $extension = $ext = pathinfo($imageBaseName, \PATHINFO_EXTENSION);
+            $imageName = "{$article}_{$count}.{$extension}";
+            ++$count;
+
+            $imageContent = file_get_contents($articleUrl . $imageUrl);
+
+            file_put_contents('.' . DIRECTORY_SEPARATOR . $targetDirectory . DIRECTORY_SEPARATOR . $imageName, $imageContent);
+        }
     }
 
-    $article = parseArticle($crawler);
-    $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix;
-    file_exists($targetDirectory) || mkdir($targetDirectory, 0777, true);
+    public function parseImageUrlList(Crawler $crawler): array
+    {
+        $images = $crawler->filter('.slider-inner li a img');
 
-    $count = 1;
+        return $images->each(function (Crawler $image) {
+            return $image->attr('src');
+        });
+    }
 
-    foreach ($imageUrlList as $imageUrl) {
-        $imageBaseName = basename($imageUrl);
-
-        $extension = $ext = pathinfo($imageBaseName, \PATHINFO_EXTENSION);
-        $imageName = "{$article}_{$count}.{$extension}";
-        ++$count;
-
-        $imageContent = file_get_contents($articleUrl . $imageUrl);
-
-        file_put_contents('.' . DIRECTORY_SEPARATOR . $targetDirectory . DIRECTORY_SEPARATOR . $imageName, $imageContent);
+    public function parseArticle(Crawler $crawler): string
+    {
+        return $crawler->filter('.articul')->attr('data-value');
     }
 }
+

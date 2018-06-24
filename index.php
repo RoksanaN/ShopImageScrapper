@@ -8,7 +8,7 @@ function httpHandler(array $request) {
 
         streamZip($request['zip']);
 
-        die;
+        return;
     }
 
     if (isset($request['delete_all_zip'])) {
@@ -23,7 +23,7 @@ function httpHandler(array $request) {
 
         header('Location: /');
 
-        die;
+        return;
     }
 
     $requestArticle = $request['article'] ?? '';
@@ -40,10 +40,11 @@ function httpHandler(array $request) {
         $articles = array_filter(explode(' ', $requestArticle));
 
         $prefix = time();
+        $scrapper = new Scrapper();
         try {
             foreach ($articles as $article) {
                 try {
-                    scrap($host . $category . $article . '.html', $prefix);
+                    $scrapper->scrap($host . $category . $article . '.html', $prefix);
                 } catch (\Exception $e) {
                     // NOP
                 }
@@ -51,7 +52,7 @@ function httpHandler(array $request) {
 
             $redirect = str_replace('index.php', '', $_SERVER['PHP_SELF']);
             header('Location: ' . $redirect . '?customeUrl=' . $customeUrl);
-            die;
+            return;
         } catch (\Exception $e) {
             // NOP
         }
