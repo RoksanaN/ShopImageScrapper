@@ -28,7 +28,7 @@ abstract class Scrapper
         $count = 1;
 
         foreach ($imageUrlList as $imageUrl) {
-            $imageBaseName = basename($imageUrl);
+            $imageBaseName = basename(parse_url($imageUrl)['path']);
 
             $extension = $ext = pathinfo($imageBaseName, \PATHINFO_EXTENSION);
             $imageName = "{$article}_{$count}.{$extension}";
