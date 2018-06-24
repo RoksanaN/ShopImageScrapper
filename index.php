@@ -29,7 +29,7 @@ function httpHandler(array $request) {
     $requestArticle = $request['article'] ?? '';
     $customeUrl = $request['customeUrl'] ?? '';
 
-    $success = false;
+    $success = (bool)$customeUrl;
 
     if ($requestArticle) {
         $host = 'http://trade-city.ua/catalog/';
@@ -56,10 +56,6 @@ function httpHandler(array $request) {
         } catch (\Exception $e) {
             // NOP
         }
-    }
-
-    if ($customeUrl) {
-        $success = true;
     }
 
     require_once 'index.html.php';
