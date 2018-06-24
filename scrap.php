@@ -34,7 +34,13 @@ abstract class Scrapper
             $imageName = "{$article}_{$count}.{$extension}";
             ++$count;
 
-            $imageContent = file_get_contents($articleUrl . $imageUrl);
+            $contentUrl = $imageUrl;
+
+            if (strpos($contentUrl, $articleUrlParsed['host']) === false) {
+                $contentUrl = $articleUrl . $imageUrl;
+            }
+
+            $imageContent = file_get_contents($contentUrl);
 
             file_put_contents('.' . DIRECTORY_SEPARATOR . $targetDirectory . DIRECTORY_SEPARATOR . $imageName, $imageContent);
         }
