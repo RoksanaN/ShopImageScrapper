@@ -2,47 +2,103 @@
 
 use Symfony\Component\DomCrawler\Crawler;
 
-function parseImageUrlList(Crawler $crawler): array {
-    $images = $crawler->filter('.slider-inner li a img');
+abstract class Scrapper
+{
+    public function scrap(string $article, string $prefix)
+    {
+        $articleUrl = $this->generateArticleUrl($article);
 
-    return $images->each(function (Crawler $image) {
-        return $image->attr('src');
-    });
-}
+        $html = file_get_contents($articleUrl);
 
-function parseArticle(Crawler $crawler): string {
-    return $crawler->filter('.articul')->attr('data-value');
-}
+        $articleUrlParsed = parse_url($articleUrl);
 
-function scrap(string $articleUrl, string $prefix) {
-    $html = file_get_contents($articleUrl);
+        $articleUrl = "{$articleUrlParsed['scheme']}://{$articleUrlParsed['host']}";
 
-    $articleUrlParsed = parse_url($articleUrl);
+        $crawler = new Crawler($html);
+        $imageUrlList = $this->parseImageUrlList($crawler);
 
-    $articleUrl = "{$articleUrlParsed['scheme']}://{$articleUrlParsed['host']}";
+        if (empty($imageUrlList)) {
+            throw new \Exception('Need update parse function');
+        }
 
-    $crawler = new Crawler($html);
-    $imageUrlList = parseImageUrlList($crawler);
+        $article = $this->parseArticle($crawler);
+        $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix;
+        file_exists($targetDirectory) || mkdir($targetDirectory, 0777, true);
 
-    if (empty($imageUrlList)) {
-        throw new \Exception('Need update parse function');
+        $count = 1;
+
+        foreach ($imageUrlList as $imageUrl) {
+            $imageBaseName = basename(parse_url($imageUrl)['path']);
+
+            $extension = $ext = pathinfo($imageBaseName, \PATHINFO_EXTENSION);
+            $imageName = "{$article}_{$count}.{$extension}";
+            ++$count;
+
+            $contentUrl = $imageUrl;
+
+            if (strpos($contentUrl, $articleUrlParsed['host']) === false) {
+                $contentUrl = $articleUrl . $imageUrl;
+            }
+
+            $imageContent = file_get_contents($contentUrl);
+
+            file_put_contents('.' . DIRECTORY_SEPARATOR . $targetDirectory . DIRECTORY_SEPARATOR . $imageName, $imageContent);
+        }
     }
 
-    $article = parseArticle($crawler);
-    $targetDirectory = 'result' . DIRECTORY_SEPARATOR . $prefix;
-    file_exists($targetDirectory) || mkdir($targetDirectory, 0777, true);
+    abstract protected function parseImageUrlList(Crawler $crawler): array;
+    abstract protected function parseArticle(Crawler $crawler): string;
+    abstract protected function generateArticleUrl(string $article): string;
+}
 
-    $count = 1;
+class ScrapperTradeCity extends Scrapper
+{
+    protected function parseImageUrlList(Crawler $crawler): array
+    {
+        $images = $crawler->filter('.slider-inner li a img');
 
-    foreach ($imageUrlList as $imageUrl) {
-        $imageBaseName = basename($imageUrl);
+        return $images->each(function (Crawler $image) {
+            return $image->attr('src');
+        });
+    }
 
-        $extension = $ext = pathinfo($imageBaseName, \PATHINFO_EXTENSION);
-        $imageName = "{$article}_{$count}.{$extension}";
-        ++$count;
+    protected function parseArticle(Crawler $crawler): string
+    {
+        return $crawler->filter('.articul')->attr('data-value');
+    }
 
-        $imageContent = file_get_contents($articleUrl . $imageUrl);
+    protected function generateArticleUrl(string $article): string
+    {
+        $host = 'http://trade-city.ua/catalog/';
 
-        file_put_contents('.' . DIRECTORY_SEPARATOR . $targetDirectory . DIRECTORY_SEPARATOR . $imageName, $imageContent);
+        $category = 'bag/';
+
+        return $host . $category . $article . '.html';
+    }
+}
+
+class ScrapperAdidas extends Scrapper
+{
+    protected function parseImageUrlList(Crawler $crawler): array
+    {
+        $images = $crawler->filter('.image-carousel-container ul li img');
+
+        return $images->each(function (Crawler $image) {
+            return $image->attr('data-zoom');
+        });
+    }
+
+    protected function parseArticle(Crawler $crawler): string
+    {
+        return $crawler->filter('#main-section')->attr('data-sku');
+    }
+
+    protected function generateArticleUrl(string $article): string
+    {
+        $host = 'https://www.adidas.ru/';
+
+        $category = 'krossovki-dlia-bega-pureboost-x/';
+
+        return $host . $category . $article . '.html';
     }
 }
