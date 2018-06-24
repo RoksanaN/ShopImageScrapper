@@ -37,7 +37,7 @@ function httpHandler(array $request) {
         $articles = array_filter(explode(' ', $requestArticle));
 
         $prefix = time();
-        $scrapper = new ScrapperTradeCity();
+        $scrapper = new ScrapperAdidas();
         try {
             foreach ($articles as $article) {
                 try {

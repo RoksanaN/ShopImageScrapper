@@ -2,7 +2,7 @@
 
 use Symfony\Component\DomCrawler\Crawler;
 
-class ScrapperTradeCity
+abstract class Scrapper
 {
     public function scrap(string $article, string $prefix)
     {
@@ -40,7 +40,14 @@ class ScrapperTradeCity
         }
     }
 
-    public function parseImageUrlList(Crawler $crawler): array
+    abstract protected function parseImageUrlList(Crawler $crawler): array;
+    abstract protected function parseArticle(Crawler $crawler): string;
+    abstract protected function generateArticleUrl(string $article): string;
+}
+
+class ScrapperTradeCity extends Scrapper
+{
+    protected function parseImageUrlList(Crawler $crawler): array
     {
         $images = $crawler->filter('.slider-inner li a img');
 
@@ -49,12 +56,12 @@ class ScrapperTradeCity
         });
     }
 
-    public function parseArticle(Crawler $crawler): string
+    protected function parseArticle(Crawler $crawler): string
     {
         return $crawler->filter('.articul')->attr('data-value');
     }
 
-    private function generateArticleUrl(string $article): string
+    protected function generateArticleUrl(string $article): string
     {
         $host = 'http://trade-city.ua/catalog/';
 
@@ -64,3 +71,28 @@ class ScrapperTradeCity
     }
 }
 
+class ScrapperAdidas extends Scrapper
+{
+    protected function parseImageUrlList(Crawler $crawler): array
+    {
+        $images = $crawler->filter('.image-carousel-container ul li img');
+
+        return $images->each(function (Crawler $image) {
+            return $image->attr('data-zoom');
+        });
+    }
+
+    protected function parseArticle(Crawler $crawler): string
+    {
+        return $crawler->filter('#main-section')->attr('data-sku');
+    }
+
+    protected function generateArticleUrl(string $article): string
+    {
+        $host = 'https://www.adidas.ru/';
+
+        $category = 'krossovki-dlia-bega-pureboost-x/';
+
+        return $host . $category . $article . '.html';
+    }
+}
