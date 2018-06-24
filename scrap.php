@@ -2,10 +2,12 @@
 
 use Symfony\Component\DomCrawler\Crawler;
 
-class Scrapper
+class ScrapperTradeCity
 {
-    public function scrap(string $articleUrl, string $prefix)
+    public function scrap(string $article, string $prefix)
     {
+        $articleUrl = $this->generateArticleUrl($article);
+
         $html = file_get_contents($articleUrl);
 
         $articleUrlParsed = parse_url($articleUrl);
@@ -50,6 +52,15 @@ class Scrapper
     public function parseArticle(Crawler $crawler): string
     {
         return $crawler->filter('.articul')->attr('data-value');
+    }
+
+    private function generateArticleUrl(string $article): string
+    {
+        $host = 'http://trade-city.ua/catalog/';
+
+        $category = 'bag/';
+
+        return $host . $category . $article . '.html';
     }
 }
 

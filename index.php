@@ -32,19 +32,16 @@ function httpHandler(array $request) {
     $success = (bool)$customeUrl;
 
     if ($requestArticle) {
-        $host = 'http://trade-city.ua/catalog/';
-        $category = 'bag/';
-
         require_once 'scrap.php';
 
         $articles = array_filter(explode(' ', $requestArticle));
 
         $prefix = time();
-        $scrapper = new Scrapper();
+        $scrapper = new ScrapperTradeCity();
         try {
             foreach ($articles as $article) {
                 try {
-                    $scrapper->scrap($host . $category . $article . '.html', $prefix);
+                    $scrapper->scrap($article, $prefix);
                 } catch (\Exception $e) {
                     // NOP
                 }
